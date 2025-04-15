@@ -1,0 +1,22 @@
+# --- ENVIRONNEMENT PYTHON ---
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- JUPYTER NOTEBOOKS ---
+.ipynb_checkpoints/
+
+# --- WINDOWS SYSTEME ---
+Thumbs.db
+
+# --- VSCode / IDEs ---
+.vscode/
+.idea/
+
+# --- FICHIERS TEMPORAIRES OU CACHE ---
+*.log
+*.tmp
+*.sqlite
