@@ -1,5 +1,3 @@
-# Nouveau contenu du README corrigé avec structure exacte et réelle du projet kayak
-readme_kayak_real = """
 # Projet Kayak – Bloc 1 : Infrastructure de données
 
 ## 🎯 Objectif du projet
