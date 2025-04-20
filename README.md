@@ -1,116 +1,77 @@
-# 🌍 Projet Kayak – Recommandation de Destinations de Vacances
+# Nouveau contenu du README corrigé avec structure exacte et réelle du projet kayak
+readme_kayak_real = """
+# Projet Kayak – Bloc 1 : Infrastructure de données
 
-Ce projet a été réalisé dans le cadre d'un projet de certification. Il a pour objectif d'aider l'application Kayak à recommander les **meilleures destinations de vacances en France**, en se basant sur :
+## 🎯 Objectif du projet
 
-- la météo prévisionnelle sur 5 jours,
-- les hôtels disponibles avec leurs notes utilisateurs.
+L’objectif de ce projet est de construire une infrastructure de données pour recommander les meilleures destinations touristiques en France, selon la météo et la qualité des hôtels.
 
----
-
-## 🎯 Objectif
-
-Créer un pipeline complet pour :
-- Récupérer les données météo à partir des coordonnées GPS de 35 villes françaises
-- Scraper les hôtels disponibles sur Booking.com
-- Enrichir les données manquantes via API Google Maps
-- Fusionner toutes les données dans un fichier `consolidated_data_utf8.csv`
-- Visualiser les résultats (Top 5 destinations, Top 20 hôtels)
-- Stocker les données sur AWS (S3 + PostgreSQL RDS)
+J'ai conçu un pipeline complet de collecte, transformation et stockage des données pour 35 villes françaises, dans un cadre pédagogique.
 
 ---
 
-## 🧱 Structure du projet
+## 🧩 Étapes réelles du pipeline
 
-```
-scraping_booking/
-├── booking_scraping/              # Scrapy spider (Booking.com)
-├── data/
-│   ├── raw/                       # Données sources (météo, villes, hôtels)
-│   └── processed/                 # Données enrichies et consolidées
-├── database/                      # Script SQL et transfert S3 → RDS
-├── images/                        # Captures d'écran S3 / RDS
-├── notebooks/
-│   └── kayak_exploration_final.ipynb  # Visualisations finales
-├── scripts/
-│   ├── extraction/                # Récupération GPS & météo
-│   ├── enrichment/               # Correction des lat/lon via Google
-│   ├── consolidation/            # Fusion des datasets
-│   └── conversion/               # Conversion UTF-8, table SQL
-├── .env.example                   # Variables d’environnement à créer
-├── .gitignore
-└── README.md
-```
+### 1. 📍 Liste des villes à analyser
+- Liste définie manuellement dans `booking_scraping/data/raw/cities.txt`
 
----
+### 2. 🔍 Récupération des coordonnées GPS
+- Script : `scripts/extraction/get_city_gps.py`
+- Résultat : `booking_scraping/data/processed/city_gps_coordinates.csv`
 
-## ⚙️ Technologies utilisées
+### 3. ☁️ Récupération des données météo (prévision sur 5 jours)
+- Script : `scripts/extraction/get_city_weather.py`
+- Résultat brut : `booking_scraping/data/raw/city_weather_forecast.csv`
+- Résultat final (wide format) : `booking_scraping/data/processed/city_weather_forecast_wide.csv`
 
-- Python / Pandas / Requests
-- Plotly pour les cartes interactives
-- Scrapy + Playwright (pour Booking)
-- OpenWeatherMap API
-- Google Maps API
-- AWS S3 & RDS PostgreSQL
-- Jupyter Notebook (visualisation)
-- VSCode + venv (environnement local)
+### 4. 🏨 Scraping des hôtels depuis Booking.com
+- Crawler Scrapy avec Playwright : `booking_scraping/spiders/booking_spider.py`
+- Résultat : `booking_scraping/data/raw/hotels_scraped.csv`
+- Enrichissement : coordonnées GPS, notes utilisateurs
+- Résultat enrichi : `booking_scraping/data/processed/updated_hotels_google_maps.csv`
+
+### 5. 📌 Enrichissement des hôtels sans coordonnées GPS
+- Script : `scripts/enrichment/api_google_missing_longitudes.py`
+
+### 6. 🔗 Consolidation des données
+- Script : `scripts/consolidation/joint_data.py`
+- Résultat : `booking_scraping/data/processed/consolidated_data_utf8.csv`
+
+### 7. 🗃️ Stockage dans une base relationnelle (Data Warehouse)
+- Script de création de la table : `database/create_table.sql`
+- Script de chargement depuis S3 : `database/download_from_s3.py`
 
 ---
 
-## 🔄 Pipeline de traitement
+## 📦 Résultat final
 
-1. **Extraction GPS** : via API Nominatim (`get_city_gps.py`)
-2. **Données météo** : via OpenWeather (`get_city_weather.py`)
-3. **Scraping hôtels** : spider Booking (`booking_spider.py`)
-4. **Enrichissement coordonnées manquantes** : API Google (`api_google_missing_longitudes.py`)
-5. **Fusion et nettoyage** : dans `consolidated_data_utf8.csv`
-6. **Export AWS** : envoi sur S3 puis import dans RDS via `create_table.sql`
+- Un fichier CSV complet et encodé en UTF-8 avec météo + hôtels : `consolidated_data_utf8.csv`
+- Une base SQL interrogeable
+- Cartes générées dans le notebook : météo, hôtels, destinations recommandées
 
 ---
 
-## 📊 Visualisations (notebook)
+## 🔐 RGPD & Éthique du scraping
 
-Notebook final 👉 `kayak_exploration_final.ipynb`  
-Contient :
-- Carte des **Top 5 villes les plus favorables**
-- Carte des **Top 20 hôtels selon les notes**
-- Analyses complémentaires (températures, distribution...)
-
----
-
-## ☁️ Intégration Cloud (preuve)
-
-### 🗃️ Bucket S3 avec les fichiers :
-![S3 Screenshot](images/screenshot_s3_processed_csvs.png)
-
-### 🧮 Table PostgreSQL dans pgAdmin :
-![pgAdmin Screenshot](images/pgadmin_table_consolidated_data.png)
-
-### 🔎 Données vérifiées :
-![SELECT Query](images/pgadmin_data_verification_queries.png)
+- Aucune donnée personnelle n’a été collectée.
+- Les données météo et géographiques proviennent d’APIs publiques.
+- Le scraping de Booking.com a été réalisé dans un cadre strictement pédagogique.
+- ⚠️ Certaines pages utilisées (notamment les fiches d’hôtels) sont listées comme interdites dans le fichier `robots.txt` du site.
+- J’ai limité le volume de requêtes pour ne pas impacter le site.
 
 ---
 
-## ⚙️ Installation locale
+## 📁 Organisation du projet
 
-1. Cloner le repo :
-```bash
-git clone https://github.com/votre-utilisateur/kayak_project.git
-cd kayak_project
-```
-
-2. Créer un `.env` à la racine :
-```
-OPENWEATHER_API_KEY=your_key_here
-```
-
-3. Installer les dépendances :
-```bash
-pip install -r requirements.txt
-```
-
-4. Lancer les notebooks ou les scripts étape par étape.
+- `notebooks/kayak_exploration_final.ipynb` → analyse et visualisations
+- `scripts/` → extraction, enrichissement, consolidation, conversion
+- `booking_scraping/` → spider Scrapy, données raw et processed
+- `database/` → table SQL + chargement
+- `images/` → captures pour vérification
 
 ---
 
-## ✅ Auteur
-Projet réalisé par [Ton Nom] dans le cadre de la certification Data.
+## 🔗 Lien GitHub
+
+👉 https://github.com/charlesdab/kayak_project
+"""
